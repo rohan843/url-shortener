@@ -6,7 +6,7 @@ const client = new Client({
   password: "highlysecurepassword",
   host: "localhost",
   port: 5432,
-  database: "postgres",
+  database: "webserver",
 });
 
 client.connect();
@@ -21,8 +21,10 @@ app.get("/goto", async (req, res) => {
   }
   const { customName, id } = splitShortURL(shortUrl);
   const URLSelectorQuery =
-    "SELECT url FROM url_table WHERE id = $1 and custom_name = $2";
+    "SELECT url_string FROM url_table WHERE id = $1 and custom_name = $2";
   const values = [id, customName];
+  const result = await client.query(URLSelectorQuery, values);
+  console.table(result.rows);
 });
 
 app.listen(3000, () => {
