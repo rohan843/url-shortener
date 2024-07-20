@@ -88,6 +88,11 @@ function isShortURLValid(shortURL) {
  * URL to be valid.
  * @param {string} shortUrl The validated short url.
  */
-function splitShortURL(shortUrl) {}
+function splitShortURL(shortUrl) {
+  const sep = shortUrl.lastIndexOf("_");
+  const id = shortUrl.substring(sep + 1);
+  const customName = shortUrl.substring(0, sep);
+  return { customName, id };
+}
 
 function getURLSelectorQuery({ customName, id }) {}
