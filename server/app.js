@@ -13,6 +13,7 @@ client.connect();
 
 app.post("/shorten", async (req, res) => {});
 
+// TODO: Imlement error handling.
 app.get("/goto", async (req, res) => {
   const shortUrl = req.query.short_url;
   if (!isShortURLValid(shortUrl)) {
@@ -21,10 +22,21 @@ app.get("/goto", async (req, res) => {
   }
   const { customName, id } = splitShortURL(shortUrl);
   const URLSelectorQuery =
-    "SELECT url_string FROM url_table WHERE id = $1 and custom_name = $2";
+    "SELECT url_string, permanent, expiry_date FROM url_table WHERE id = $1 and custom_name = $2";
   const values = [id, customName];
   const result = await client.query(URLSelectorQuery, values);
-  console.table(result.rows);
+  if (result.rowCount === 0) {
+    res.status(404).send("URL not found");
+  } else {
+    const { url_string, permanent, expiry_date } = result.rows[0];
+    if (permanent) {
+      res.send(url_string);
+    } else if (new Date(expiry_date) >= new Date()) {
+      res.send(url_string);
+    } else {
+      res.status(410).send("This link has expired.");
+    }
+  }
 });
 
 app.listen(3000, () => {
