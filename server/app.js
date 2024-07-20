@@ -20,8 +20,9 @@ app.get("/goto", async (req, res) => {
     return;
   }
   const { customName, id } = splitShortURL(shortUrl);
-  const URLSelectorQuery = getURLSelectorQuery({ customName, id });
-  console.log(URLSelectorQuery);
+  const URLSelectorQuery =
+    "SELECT url FROM url_table WHERE id = $1 and custom_name = $2";
+  const values = [id, customName];
 });
 
 app.listen(3000, () => {
@@ -94,5 +95,3 @@ function splitShortURL(shortUrl) {
   const customName = shortUrl.substring(0, sep);
   return { customName, id };
 }
-
-function getURLSelectorQuery({ customName, id }) {}
