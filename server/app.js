@@ -74,7 +74,7 @@ function isShortURLValid(shortURL) {
     return false;
   } else if (!underscoreFound) {
     return false;
-  } else if (idLengthFound > 19) {
+  } else if (idLengthFound > 19 || idLengthFound < 1) {
     return false; // id is a 64-bit number, so it can have 19 digits at most.
   } else if (nameLengthFound === 0) {
     return false; // Custom name is required.
