@@ -23,3 +23,5 @@ This command will:
 3. Forward the port `5432` from the docker to the port `5432` of our `localhost`, allowing us to access the DB.
 
 Now, the DB should be up and running for usage.
+
+> Note that this will execute the commands in a DB called `webserver`, i.e., same as the specified username.
