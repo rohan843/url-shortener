@@ -1,6 +1,7 @@
 const app = require("express")();
 const { Client } = require("pg");
 
+// HACK: Start the container before beginning the work.
 const client = new Client({
   user: "webserver",
   password: "highlysecurepassword",
@@ -11,9 +12,10 @@ const client = new Client({
 
 client.connect();
 
+// TODO: Complete this endpoint.
 app.post("/shorten", async (req, res) => {});
 
-// TODO: Imlement error handling.
+// TODO: Implement error handling.
 app.get("/goto", async (req, res) => {
   const shortUrl = req.query.short_url;
   if (!isShortURLValid(shortUrl)) {
