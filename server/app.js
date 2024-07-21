@@ -28,7 +28,7 @@ app.post("/shorten", async (req, res) => {
   } else {
     const result = await client.query(
       "insert into url_table (url_string, permanent, expiry_date, custom_name) values ($1, $2, to_timestamp($3), $4) returning id;",
-      [url, permanent === 't', new Date(expiry_date).getTime(), custom_name]
+      [url, permanent === 't', new Date(expiry_date).getTime() / 1000, custom_name]
     );
     const { id } = result.rows[0];
     const shortURL = custom_name + "_" + id;
