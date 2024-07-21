@@ -36,13 +36,17 @@ app.post("/shorten", async (req, res) => {
       [
         url,
         permanent === "t",
-        new Date(expiry_date).getTime() / 1000,
+        new Date(expiry_date).getTime() / 1000 || 0,
         custom_name,
       ]
     );
     const { id } = result.rows[0];
     const shortURL = custom_name + "_" + id;
-    res.send(`The short url is: ${serverURL}/goto?short_url=${shortURL}`);
+
+    res.json({
+      error: "Success!",
+      shortURL: `${serverURL}/goto?short_url=${shortURL}`,
+    });
   }
 });
 
@@ -85,7 +89,7 @@ function validInputs({ permanent, expiry_date, custom_name, url }) {
     return false;
   } else if (!custom_name || /\s/.test(custom_name)) {
     return false; // custom name should not be empty, and should not have any whitespaces.
-  } else if (permanent === 'f' && isNaN(new Date(expiry_date).getTime())) {
+  } else if (permanent === "f" && isNaN(new Date(expiry_date).getTime())) {
     return false;
   } else if (!url) {
     return false;
