@@ -1,5 +1,6 @@
 const app = require("express")();
 const { Client } = require("pg");
+const path = require('path');
 
 const serverURL = "http://localhost:3000";
 
@@ -13,6 +14,10 @@ const client = new Client({
 });
 
 client.connect();
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "./index.html"));
+});
 
 // TODO: Implement error handling.
 app.post("/shorten", async (req, res) => {
@@ -28,7 +33,12 @@ app.post("/shorten", async (req, res) => {
   } else {
     const result = await client.query(
       "insert into url_table (url_string, permanent, expiry_date, custom_name) values ($1, $2, to_timestamp($3), $4) returning id;",
-      [url, permanent === 't', new Date(expiry_date).getTime() / 1000, custom_name]
+      [
+        url,
+        permanent === "t",
+        new Date(expiry_date).getTime() / 1000,
+        custom_name,
+      ]
     );
     const { id } = result.rows[0];
     const shortURL = custom_name + "_" + id;
