@@ -5,5 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>URL Shortener</title>
   </head>
-  <body></body>
+
+  <body>
+    <form id="dataForm">
+      <input id="url" type="url" required />
+      <input id="permanent" type="checkbox" />
+      <input id="expiry_date" type="date" />
+      <input id="custom_name" type="text" required />
+      <button>Shorten!</button>
+    </form>
+    <textarea id="response" readonly></textarea>
+    <script>
+      document
+        .getElementById("dataForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const url = document.getElementById("url").value;
+          const expiry_date = document.getElementById("expiry_date").value;
+          const permanent = document.getElementById("permanent").checked
+            ? "t"
+            : "f";
+          const custom_name = document.getElementById("custom_name").value;
+
+          try {
+            const response = await fetch(
+              `http://localhost:3000/shorten?url=${url}&expiry_date=${expiry_date}&permanent=${permanent}&custom_name=${custom_name}`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            const data = await response.json();
+
+            document.getElementById("response").textContent = JSON.stringify(
+              data,
+              null,
+              2
+            );
+          } catch (error) {
+            document.getElementById("response").textContent = "Error: " + error;
+          }
+        });
+    </script>
+  </body>
 </html>

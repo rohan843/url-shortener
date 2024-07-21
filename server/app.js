@@ -1,6 +1,6 @@
 const app = require("express")();
 const { Client } = require("pg");
-const path = require('path');
+const path = require("path");
 
 const serverURL = "http://localhost:3000";
 
@@ -85,7 +85,7 @@ function validInputs({ permanent, expiry_date, custom_name, url }) {
     return false;
   } else if (!custom_name || /\s/.test(custom_name)) {
     return false; // custom name should not be empty, and should not have any whitespaces.
-  } else if (isNaN(new Date(expiry_date).getTime())) {
+  } else if (permanent === 'f' && isNaN(new Date(expiry_date).getTime())) {
     return false;
   } else if (!url) {
     return false;
