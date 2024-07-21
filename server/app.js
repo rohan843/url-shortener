@@ -1,6 +1,8 @@
 const app = require("express")();
 const { Client } = require("pg");
 
+const serverURL = "http://localhost:3000";
+
 // HACK: Start the container before beginning the work.
 const client = new Client({
   user: "webserver",
@@ -12,8 +14,26 @@ const client = new Client({
 
 client.connect();
 
-// TODO: Complete this endpoint.
-app.post("/shorten", async (req, res) => {});
+// TODO: Implement error handling.
+app.post("/shorten", async (req, res) => {
+  const url = req.query.url;
+  const permanent = req.query.permanent;
+  const expiry_date = req.query.expiry_date;
+  const custom_name = req.query.custom_name;
+  if (!validInputs({ url, permanent, expiry_date, custom_name })) {
+    res.json({
+      error: "Invalid arguments passed.",
+      shortUrl: null,
+    });
+  } else {
+    const result = await client.query(
+      "insert into url_table (url_string, permanent, expiry_date, custom_name) values ('www.example.com', false, to_timestamp(1329247), 'test') returning id, custom_name;"
+    );
+    const { id, custom_name } = result.rows[0];
+    const shortURL = custom_name + "_" + id;
+    res.send(`The short url is: ${serverURL}/goto?short_url=${shortURL}`);
+  }
+});
 
 // TODO: Implement error handling.
 app.get("/goto", async (req, res) => {
@@ -44,6 +64,24 @@ app.get("/goto", async (req, res) => {
 app.listen(3000, () => {
   console.log("Server setup on port 3000");
 });
+
+/**
+ * Validates the parameters used for creating a short URL.
+ * @returns `true` if params are correct, else `false`.
+ */
+function validInputs({ permanent, expiry_date, custom_name, url }) {
+  if (permanent !== "t" && permanent !== "f") {
+    return false;
+  } else if (!custom_name || /\s/.test(custom_name)) {
+    return false; // custom name should not be empty, and should not have any whitespaces.
+  } else if (isNaN(new Date(expiry_date).getTime())) {
+    return false;
+  } else if (!url) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 /**
  * Returns true if the input string is a single digit.
